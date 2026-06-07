@@ -202,17 +202,20 @@ def GenerateMonitors(where):
         conf.write(buffer)
         conf.truncate()
 
-def ModifyAMonitorMode(name, key, mode):
+def ModifyAMonitorMode(name, key, mode, scale = False):
     with open(WORKING_DIR + "/configs/" + name + ".json", "r+") as conf:
         buffer = json.loads(conf.read())
 
-        match mode:
-            case "disable":
-                buffer[key][0]["disable"] = True
-            case "toggle":
-                buffer[key][0]["disable"] = not buffer[key][0]["disable"]
-            case _:
-                buffer[key][0]["mode"] = mode
+        if not scale:
+            match mode:
+                case "disable":
+                    buffer[key][0]["disable"] = True
+                case "toggle":
+                    buffer[key][0]["disable"] = not buffer[key][0]["disable"]
+                case _:
+                    buffer[key][0]["mode"] = mode
+        else:
+            buffer[key][0]["scale"] = mode
 
         conf.seek(0)
         json.dump(buffer, conf, indent=4)
@@ -313,6 +316,21 @@ if __name__ == "__main__":
                         exit(1)
                 else:
                     ModifyAMonitorMode("monitors", monitor_selected, resolution_selected)
+
+                monitors = ReadConfig("monitors")
+                GenerateMonitors(WORKING_DIR)
+
+                os.system("swaymsg reload")
+
+                in_use = 2
+            case "set-monitor-scale":
+                if not (sys.argv.__len__() > (index + 2)):
+                    sys.stderr.write("Cmd error! set-monitor-mode need at least 2 arguments")
+                    exit(1)
+                monitor_selected = sys.argv[index + 1]
+                scale_selected = sys.argv[index + 2]
+
+                ModifyAMonitorMode("monitors", monitor_selected, float(scale_selected), True)
 
                 monitors = ReadConfig("monitors")
                 GenerateMonitors(WORKING_DIR)
