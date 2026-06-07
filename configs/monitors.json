@@ -1,0 +1,16 @@
+{
+    "DP-1": [
+        {
+            "mode": "1440x900@63",
+            "position": "0,0",
+            "disable": false
+        }
+    ],
+    "eDP-1": [
+        {
+            "mode": "1920x1080@60",
+            "position": "1920,0",
+            "disable": false
+        }
+    ]
+}
