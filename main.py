@@ -1,14 +1,14 @@
 import os, json, sys, subprocess, math
 
-WORKING_DIR = "/home/danielpag/.config/sway"
-# WORKING_DIR = "." Only for debugging
+# WORKING_DIR = "/home/danielpag/.config/sway"
+WORKING_DIR = "." # Only for debugging
 
 # User experience configs
 POINTER_SPEED           = "0.2"
 POINTER_ACCELERATION    = False
 
 BROWSER     = "firefox"
-TERMINAL    = "alacritty"
+TERMINAL    = "ghostty"
 SUPER_KEY   = "Mod4"
 FILE_EXPLORER = "dolphin"
 MENU_EXECUTABLE = "rofi -show drun"
@@ -223,9 +223,11 @@ def ParseMonitors():
         CustomMonitors[monitor["name"]] = {
             "mode": str(default_mode_width) + 'x' + str(default_mode_height) + '@' + str(default_refresh), # The last mode from swaymsg
             "position": str(x) + ",0",
-            "disable": False
+            "disable": False,
+            "scale": monitor["scale"]
         }
 
+        # This only works well with two monitors
         if x > 0: x -= (int(default_mode_width) * 2)
         else:     x += int(   default_mode_width   )
 
@@ -274,7 +276,7 @@ if __name__ == "__main__":
 
                 if resolution_selected == "better":
                     ModifyAMonitorMode("monitors", monitor_selected, "{}x{}@{}".format(default_mode_width, default_mode_height, default_refresh))
-                else:
+                elif not resolution_selected == "toggle":
                     # Check if the selected mode is avaible in sway
                     w = resolution_selected.find('@')
                     s = resolution_selected[:resolution_selected.find('@')].split('x')
@@ -289,7 +291,7 @@ if __name__ == "__main__":
                     if not found:
                         sys.stderr.write("Cmd error! that mode isn't available by sway")
                         exit(1)
-
+                else:
                     ModifyAMonitorMode("monitors", monitor_selected, resolution_selected)
 
                 monitors = ReadConfig("monitors")
