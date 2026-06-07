@@ -1,7 +1,7 @@
 import os, json, sys, subprocess, math
 
-# WORKING_DIR = "/home/danielpag/.config/sway"
-WORKING_DIR = "." # Only for debugging
+WORKING_DIR = "/home/danielpag/.config/sway"
+# WORKING_DIR = "." # Only for debugging
 
 # User experience configs
 POINTER_SPEED           = "0.2"
@@ -62,7 +62,17 @@ Customkeybinds = {
 CustomGenerals = {
     "input type:pointer": [ ["accel_profile", "adaptive" if POINTER_ACCELERATION else "flat"], ["pointer_accel", POINTER_SPEED] ],
     "input type:keyboard": [ ["xkb_layout", KEYBOARD_LAYOUT] ],
-    "floating_modifier $mod normal": []
+    "floating_modifier $mod normal": [],
+    
+    # Customization
+    "default_border none": [],
+    "default_floating_border none": [],
+    "client.focused          #7aa2f7  #1f2335    #ffffff #1a1b26  #7aa2f7": [],
+    "client.focused_inactive #3b4261  #292e42    #c0caf5 #3b4261  #3b4261": [],
+    "client.unfocused        #1a1b26  #1a1b26    #565f89 #1a1b26  #1a1b26": [],
+    "client.urgent           #f7768e  #f7768e    #ffffff #f7768e  #f7768e": [],
+    "client.placeholder      #1a1b26  #1a1b26    #565f89 #1a1b26  #1a1b26": [],
+    "client.background       #1a1b26": [],
 }
 CustomMonitors = {}
 
