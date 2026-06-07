@@ -130,59 +130,66 @@ def ReadConfig(name: str):
     ReadConfig(name)
 
 def GenerateGenerals(where):
+    buffer: str = ""
     with open(where + "/config", "w") as conf:
         # First variables
         print("Setting variables...")
-        conf.write("# Sway config generator\n\n# Variables\n")
+        buffer += "# Sway config generator\n\n# Variables\n"
 
-        for var in variables["set"]: conf.write("set " + var[0] + ' ' + var[1] + '\n')
-        conf.write("\ninclude {}/*.conf\n".format(WORKING_DIR))
+        for var in variables["set"]: buffer += "set {} {}\n".format(var[0], var[1])
+        buffer += "\ninclude {}/*.conf\n".format(WORKING_DIR)
 
         print("Setting apps...")
-        conf.write('\n# Start\n')
+        buffer += "\n# Start\n"
 
-        for i in CustomExecApps: conf.write("exec {}\n".format(i))
+        for i in CustomExecApps: buffer += "exec {}\n".format(i)
 
         print("Setting generals...")
-        conf.write('\n# General\n')
+        buffer += "\n# General\n"
 
         for key, value in general.items():
-            conf.write(key + (' {\n' if value[0].__len__() else '\n'))
+            buffer += key + (' {\n' if value[0].__len__() else '\n')
 
             for i in value[0]:
-                conf.write('\t')
+                buffer += '\t'
                 for y in i:
-                    conf.write(y + ' ')
-                conf.write('\n')
+                    buffer += y + ' '
+                buffer += '\n'
 
-            if value[0].__len__(): conf.write('}\n')
+            if value[0].__len__(): buffer += "}\n"
 
+        conf.write(buffer)
         conf.truncate()
 def GenerateKeybinds(where):
+    buffer: str = ""
     with open(where + "/keybinds.conf", "w") as conf:
-
         print("Setting keybinds...")
-        conf.write("# Keybinds\n")
+        buffer += "# Keybinds\n"
 
-        conf.write("include {}/config\n\n".format(WORKING_DIR))
+        buffer += "include {}/config\n\n".format(WORKING_DIR)
 
         for var in keybinds["bindsym"]:
-            conf.write("bindsym")
-            for i in var: conf.write(' ' + i)
-            conf.write('\n')
+            buffer += "bindsym"
+            for i in var: buffer += (' ' + i)
+            buffer += '\n'
 
+        conf.write(buffer)
         conf.truncate()
 def GenerateMonitors(where):
+    buffer: str = ""
     with open(where + "/monitors.conf", "w") as conf:
         print("Setting monitors...")
-        conf.write("# Monitors\n")
+        buffer += "# Monitors\n"
 
         for key, value in monitors.items():
             if value[0]["disable"]:
-                conf.write("output " + key + " disable\n")
+                buffer += "output {} disable".format(key)
             else:
-                conf.write("output " + key + " mode " + value[0]["mode"] + "Hz" + " position " + value[0]["position"] + '\n')
+                buffer += "output {} mode {}Hz position {}\n".format(key, value[0]["mode"], value[0]["position"])
+                if not value[0]["scale"] == None:
+                    buffer += "output {} scale {}\n".format(key, value[0]["scale"])
 
+        conf.write(buffer)
         conf.truncate()
 
 def ModifyAMonitorMode(name, key, mode):
@@ -224,7 +231,7 @@ def ParseMonitors():
             "mode": str(default_mode_width) + 'x' + str(default_mode_height) + '@' + str(default_refresh), # The last mode from swaymsg
             "position": str(x) + ",0",
             "disable": False,
-            "scale": monitor["scale"]
+            "scale": monitor.get("scale")
         }
 
         # This only works well with two monitors
@@ -232,6 +239,9 @@ def ParseMonitors():
         else:     x += int(   default_mode_width   )
 
 if __name__ == "__main__":
+    if not os.path.exists(WORKING_DIR + "/configs"):
+        os.mkdir(WORKING_DIR + "/configs")
+
     # First things first, Reading the configs
     variables = ReadConfig("variables")
     keybinds  = ReadConfig("keybinds")
